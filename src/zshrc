@@ -523,7 +523,7 @@ tgt() {
     echo "Target set: $TGT"
 
     # Scaffold standalone engagement (silently no-ops if it already exists)
-    new_engagement standalone "$TGT"
+    # new_engagement standalone "$TGT"
 }
 
 untgt() {
