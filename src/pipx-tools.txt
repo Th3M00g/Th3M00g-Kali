@@ -1,0 +1,35 @@
+# pipx-tools.txt — list of pipx-installed tools to restore on fresh setup
+#
+# Format: one tool per line. Lines starting with # and blank lines are ignored.
+# Tools can be:
+#   - PyPI package names:        impacket
+#   - Git URLs:                  git+https://github.com/owner/repo
+#   - Specific versions:         impacket==0.11.0
+#
+# Generate from your current pipx state:
+#   pipx list --short | awk '{print $1}' > src/pipx-tools.txt
+#
+# Refresh periodically as you add/remove tools.
+
+# ─── Common pentest tools (uncomment what you actually use) ────────────────
+# impacket
+# netexec
+# certipy-ad
+# bloodyad
+# pypykatz
+# ldapdomaindump
+# kerbrute
+# pwntools
+# coercer
+# enum4linux-ng
+
+# ─── Web ───────────────────────────────────────────────────────────────────
+# wfuzz
+# arjun
+
+# ─── Crypto / hashing ──────────────────────────────────────────────────────
+# name-that-hash
+
+# ─── General Python utilities ──────────────────────────────────────────────
+# httpie
+# rich-cli

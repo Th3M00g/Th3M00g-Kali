@@ -1,0 +1,44 @@
+# ~/.inputrc — readline config
+#
+# Affects: bash, python REPL, gdb, mysql, psql, sqlite3, and any other
+# interactive tool built on libreadline.
+#
+# Note: zsh does NOT use readline (it uses ZLE), so this file has no effect
+# on zsh sessions. Zsh-specific bindings live in ~/.zshrc via `bindkey`.
+
+# ─── Completion ─────────────────────────────────────────────────────────────
+# Case-insensitive tab completion
+set completion-ignore-case on
+
+# Treat hyphens and underscores as equivalent in completion
+set completion-map-case on
+
+# Show all matches if multiple options exist (no double-tab needed)
+set show-all-if-ambiguous on
+set show-all-if-unmodified on
+
+# Color completion matches by file type (uses LS_COLORS)
+set colored-stats on
+
+# Color the matching prefix in completion menus
+set colored-completion-prefix on
+
+# Show extra info (like ls -F) in completion menus
+set visible-stats on
+
+# When completing a partial path, don't re-complete what's already typed
+set skip-completed-text on
+
+# ─── History search ─────────────────────────────────────────────────────────
+# Up/down arrow searches history matching what you've typed so far.
+# Type "nmap" then press Up — cycles only through past commands starting
+# with "nmap" instead of every command in order.
+"\e[A": history-search-backward
+"\e[B": history-search-forward
+
+# ─── Misc ───────────────────────────────────────────────────────────────────
+# Don't beep, just visually flash on errors
+set bell-style none
+
+# Disable the "Display all N possibilities? (y or n)" prompt for small N
+set completion-query-items 200

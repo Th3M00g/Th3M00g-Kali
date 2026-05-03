@@ -1,0 +1,34 @@
+# ~/.zshrc.local — machine-specific overrides
+#
+# This file is gitignored. Copy this example to ~/.zshrc.local and edit
+# with your own values. It is sourced from ~/.zshrc at the very end, so
+# anything here overrides values set earlier.
+#
+# Use this file for:
+#   - Aliases pointing to private repos (paths that shouldn't be public)
+#   - Machine-specific PATH additions
+#   - Personal API keys / tokens (or, better, source them from a separate file)
+#   - Identity strings (real name, email) you don't want in a public repo
+
+# ─── Private tool paths ────────────────────────────────────────────────────
+# Example: alias pointing into a private scripts
+# alias private-script="$HOME/path/to/your/private-script.sh"
+
+# ─── Machine-specific PATH ─────────────────────────────────────────────────
+# Add anything that lives outside the standard /usr/local/bin, ~/.local/bin, etc.
+# export PATH="$PATH:/opt/some-vendor-tool/bin"
+# export PATH="$PATH:$HOME/Tools/custom-scripts"
+
+# ─── Engagement directory override ─────────────────────────────────────────
+# By default, new_engagement creates dirs under ~/Engagements.
+# Override here if you keep them somewhere else on this machine.
+# export ENGAGEMENTS_DIR="$HOME/Work/Engagements"
+
+# ─── Private functions / aliases ───────────────────────────────────────────
+# Anything you don't want in a public dotfiles repo goes here.
+# alias vpn-up="sudo openvpn --config $HOME/.vpn/client.ovpn"
+
+# ─── Secrets (consider a separate file) ────────────────────────────────────
+# If you have API keys or tokens, prefer sourcing them from an even more
+# protected file (chmod 600) rather than putting them inline:
+# [[ -f ~/.secrets ]] && source ~/.secrets
