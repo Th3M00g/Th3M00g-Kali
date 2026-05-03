@@ -10,6 +10,11 @@ config, and an installer to configure a fresh Kali install for my prefered basel
 Th3M00g-Kali/
 ├── install.sh              symlink dotfiles into $HOME, configure git, restore pipx tools
 ├── README.md               this file
+├── docs/
+│   ├── installation.gif                   installation demonstration
+│   ├── engagement_scaffold_setup.gif      engagement scaffold setup demonstration
+│   ├── listener_setup.gif                 listener setup demonstration
+│   └── wipe_reset.gif                     wipe history demonstration   
 └── src/
     ├── zshrc               zsh config: prompt, helpers, aliases
     ├── vimrc               vim config: line numbers, 80-char marker, sane defaults
