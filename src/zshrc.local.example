@@ -17,7 +17,7 @@
 # ─── Machine-specific PATH ─────────────────────────────────────────────────
 # Add anything that lives outside the standard /usr/local/bin, ~/.local/bin, etc.
 # export PATH="$PATH:/opt/some-vendor-tool/bin"
-# export PATH="$PATH:$HOME/Tools/custom-scripts"
+# export PATH="$PATH:$HOME/Tools/custom-binaries"
 
 # ─── Engagement directory override ─────────────────────────────────────────
 # By default, new_engagement creates dirs under ~/Engagements.
