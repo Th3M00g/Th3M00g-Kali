@@ -1,0 +1,146 @@
+" ═══════════════════════════════════════════════════════════════════════════
+" ~/.vimrc — Th3M00g
+" ═══════════════════════════════════════════════════════════════════════════
+
+" ─── Basics ────────────────────────────────────────────────────────────────
+set nocompatible              " disable vi compatibility (modern vim features)
+filetype plugin indent on     " enable filetype detection, plugins, indent
+syntax on                     " syntax highlighting
+
+" ─── Line numbers ──────────────────────────────────────────────────────────
+set number                    " show absolute line number on current line
+set relativenumber            " relative numbers on other lines (jump targets)
+set numberwidth=4             " reserve 4 columns for line numbers
+
+" ─── 80-char marker ────────────────────────────────────────────────────────
+set colorcolumn=80            " vertical bar at column 80
+highlight ColorColumn ctermbg=235 guibg=#2c2c2c   " subtle dark grey
+
+" ─── Indentation ───────────────────────────────────────────────────────────
+set expandtab                 " spaces instead of tabs (default)
+set tabstop=4                 " a tab character displays as 4 spaces
+set softtabstop=4             " <Tab> in insert mode inserts 4 spaces
+set shiftwidth=4              " autoindent uses 4 spaces
+set autoindent                " carry indent from prev line
+set smartindent               " indent intelligently based on syntax
+
+" ─── Search ────────────────────────────────────────────────────────────────
+set incsearch                 " show matches as you type
+set hlsearch                  " highlight all matches
+set ignorecase                " case-insensitive by default
+set smartcase                 " ...unless query contains uppercase
+" Press <Esc><Esc> to clear search highlight
+nnoremap <Esc><Esc> :nohlsearch<CR>
+
+" ─── UI ────────────────────────────────────────────────────────────────────
+set ruler                     " show cursor line:col in status bar
+set showcmd                   " show partial command in bottom-right
+set showmatch                 " briefly jump to matching bracket
+set laststatus=2              " always show status line
+set wildmenu                  " tab-completion menu for : commands
+set wildmode=longest:full,full
+set scrolloff=8               " keep 8 lines visible above/below cursor
+set sidescrolloff=8           " same horizontally
+set cursorline                " highlight current line
+set signcolumn=yes            " always show sign column (no flicker)
+set splitright                " :vsplit opens to the right
+set splitbelow                " :split opens below
+set mouse=a                   " enable mouse (toggle off with `:set mouse=`)
+set termguicolors             " use 24-bit colors if terminal supports
+
+" ─── File handling ─────────────────────────────────────────────────────────
+set encoding=utf-8
+set fileencoding=utf-8
+set hidden                    " allow switching buffers with unsaved changes
+set autoread                  " reload file if changed outside vim
+set backspace=indent,eol,start  " sane backspace behavior
+set nobackup                  " no ~ backup files cluttering the directory
+set nowritebackup
+set noswapfile                " no .swp files (use undo files instead)
+set undofile                  " persistent undo across sessions
+set undodir=~/.vim/undo//     " trailing // = full path encoded in filename
+
+" Create undo dir if it doesn't exist
+if !isdirectory(expand('~/.vim/undo'))
+    call mkdir(expand('~/.vim/undo'), 'p')
+endif
+
+" ─── Whitespace visualization ──────────────────────────────────────────────
+set list
+set listchars=tab:»·,trail:·,extends:›,precedes:‹,nbsp:␣
+
+" ─── Filetype-specific overrides ───────────────────────────────────────────
+" Python: PEP-8 style (4 spaces, already default but explicit)
+autocmd FileType python setlocal tabstop=4 softtabstop=4 shiftwidth=4 expandtab
+
+" Go: tabs (gofmt's standard), 4-wide display
+autocmd FileType go setlocal tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab
+
+" YAML / JSON: 2 spaces (community standard)
+autocmd FileType yaml,json setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
+
+" Bash / sh: 2 spaces (common; switch to 4 if you prefer)
+autocmd FileType sh,bash setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
+
+" C: 4 spaces (or tabs, your call — Linux kernel uses tabs, GNU uses 8 spaces)
+autocmd FileType c setlocal tabstop=4 softtabstop=4 shiftwidth=4 expandtab
+
+" Markdown: soft wrap for prose
+autocmd FileType markdown setlocal wrap linebreak nolist
+
+" Strip trailing whitespace on save (except for markdown — trailing 2 spaces = line break)
+autocmd BufWritePre * if &filetype != 'markdown' | %s/\s\+$//e | endif
+
+" ─── Leader key & quick mappings ───────────────────────────────────────────
+let mapleader = " "           " spacebar as leader
+
+" Quick save / quit
+nnoremap <leader>w :w<CR>
+nnoremap <leader>q :q<CR>
+nnoremap <leader>x :x<CR>
+
+" Edit / reload vimrc
+nnoremap <leader>ev :edit $MYVIMRC<CR>
+nnoremap <leader>sv :source $MYVIMRC<CR>
+
+" Buffer navigation
+nnoremap <leader>bn :bnext<CR>
+nnoremap <leader>bp :bprevious<CR>
+nnoremap <leader>bd :bdelete<CR>
+
+" Window navigation (Ctrl + hjkl instead of Ctrl-w then hjkl)
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+
+" Move lines up/down with Alt+j/k in normal & visual mode
+nnoremap <A-j> :m .+1<CR>==
+nnoremap <A-k> :m .-2<CR>==
+vnoremap <A-j> :m '>+1<CR>gv=gv
+vnoremap <A-k> :m '<-2<CR>gv=gv
+
+" Stay in visual mode after indenting
+vnoremap < <gv
+vnoremap > >gv
+
+" Yank to end of line (consistent with C and D)
+nnoremap Y y$
+
+" Center screen after jumping
+nnoremap n nzz
+nnoremap N Nzz
+nnoremap <C-d> <C-d>zz
+nnoremap <C-u> <C-u>zz
+
+" ─── Status line (no plugin needed) ────────────────────────────────────────
+set statusline=
+set statusline+=\ %f                          " file path
+set statusline+=\ %m                          " modified flag
+set statusline+=%=                            " right-align
+set statusline+=\ %y                          " filetype
+set statusline+=\ \|\ %{&fileencoding}        " encoding
+set statusline+=\ \|\ %p%%                    " percent through file
+set statusline+=\ \|\ %l:%c\                  " line:column
+
+" ═══════════════════════════════════════════════════════════════════════════

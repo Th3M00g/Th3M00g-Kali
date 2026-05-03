@@ -1,0 +1,779 @@
+# ~/.zshrc file for zsh interactive shells.
+# see /usr/share/doc/zsh/examples/zshrc for examples
+
+setopt autocd              # change directory just by typing its name
+#setopt correct            # auto correct mistakes
+setopt interactivecomments # allow comments in interactive mode
+setopt magicequalsubst     # enable filename expansion for arguments of the form 'anything=expression'
+setopt nonomatch           # hide error message if there is no match for the pattern
+setopt notify              # report the status of background jobs immediately
+setopt numericglobsort     # sort filenames numerically when it makes sense
+setopt promptsubst         # enable command substitution in prompt
+
+WORDCHARS='_-' # Don't consider certain characters part of the word
+
+# hide EOL sign ('%')
+PROMPT_EOL_MARK=""
+
+# configure key keybindings
+bindkey -e                                        # emacs key bindings
+bindkey ' ' magic-space                           # do history expansion on space
+bindkey '^U' backward-kill-line                   # ctrl + U
+bindkey '^[[3;5~' kill-word                       # ctrl + Supr
+bindkey '^[[3~' delete-char                       # delete
+bindkey '^[[1;5C' forward-word                    # ctrl + ->
+bindkey '^[[1;5D' backward-word                   # ctrl + <-
+bindkey '^[[5~' beginning-of-buffer-or-history    # page up
+bindkey '^[[6~' end-of-buffer-or-history          # page down
+bindkey '^[[H' beginning-of-line                  # home
+bindkey '^[[F' end-of-line                        # end
+bindkey '^[[Z' undo                               # shift + tab undo last action
+
+# enable completion features
+autoload -Uz compinit
+compinit -d ~/.cache/zcompdump
+zstyle ':completion:*:*:*:*:*' menu select
+zstyle ':completion:*' auto-description 'specify: %d'
+zstyle ':completion:*' completer _expand _complete
+zstyle ':completion:*' format 'Completing %d'
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*' list-colors ''
+zstyle ':completion:*' list-prompt %SAt %p: Hit TAB for more, or the character to insert%s
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
+zstyle ':completion:*' rehash true
+zstyle ':completion:*' select-prompt %SScrolling active: current selection at %p%s
+zstyle ':completion:*' use-compctl false
+zstyle ':completion:*' verbose true
+zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
+
+# History configurations
+HISTFILE=~/.zsh_history
+HISTSIZE=1000
+SAVEHIST=2000
+setopt hist_expire_dups_first # delete duplicates first when HISTFILE size exceeds HISTSIZE
+setopt hist_ignore_dups       # ignore duplicated commands history list
+setopt hist_ignore_space      # ignore commands that start with space
+setopt hist_verify            # show command with history expansion to user before running it
+#setopt share_history         # share command history data
+
+# force zsh to show the complete history
+alias history="history 0"
+
+# configure `time` format
+TIMEFMT=$'\nreal\t%E\nuser\t%U\nsys\t%S\ncpu\t%P'
+
+# make less more friendly for non-text input files, see lesspipe(1)
+#[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+
+# set variable identifying the chroot you work in (used in the prompt below)
+if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
+    debian_chroot=$(cat /etc/debian_chroot)
+fi
+
+# set a fancy prompt (non-color, unless we know we "want" color)
+case "$TERM" in
+    xterm-color|*-256color) color_prompt=yes;;
+esac
+
+# uncomment for a colored prompt.
+force_color_prompt=yes
+
+if [ -n "$force_color_prompt" ]; then
+    if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
+        color_prompt=yes
+    else
+        color_prompt=
+    fi
+fi
+
+configure_prompt() {
+    prompt_symbol=㉿
+    # Skull emoji for root terminal
+    #[ "$EUID" -eq 0 ] && prompt_symbol=💀
+    case "$PROMPT_ALTERNATIVE" in
+        twoline)
+            PROMPT=$'%F{160}┌──${debian_chroot:+($debian_chroot)─}${VIRTUAL_ENV:+($(basename $VIRTUAL_ENV))─}(%B%F{160}%n'$prompt_symbol$'%m%b%F{160})-${NETWORK_PROMPT}%F{160}-[%B%F{252}%(6~.%-1~/…/%4~.%5~)%b%F{160}]\n└─%B%F{160}%(#.#.$)%b%F{reset} '
+            # Right-side prompt with exit codes and background processes
+            #RPROMPT=$'%(?.. %? %F{red}%B⨯%b%F{reset})%(1j. %j %F{yellow}%B⚙%b%F{reset}.)'
+            ;;
+        oneline)
+            PROMPT=$'${debian_chroot:+($debian_chroot)}${VIRTUAL_ENV:+($(basename $VIRTUAL_ENV))}%B%F{160}%n@%m%b%F{reset}:%B%F{252}%~%b%F{reset}%(#.#.$) '
+            RPROMPT=
+            ;;
+        backtrack)
+            PROMPT=$'${debian_chroot:+($debian_chroot)}${VIRTUAL_ENV:+($(basename $VIRTUAL_ENV))}%B%F{160}%n@%m%b%F{reset}:%B%F{252}%~%b%F{reset}%(#.#.$) '
+            RPROMPT=
+            ;;
+    esac
+    unset prompt_symbol
+}
+
+# The following block is surrounded by two delimiters.
+# These delimiters must not be modified. Thanks.
+# START KALI CONFIG VARIABLES
+PROMPT_ALTERNATIVE=twoline
+NEWLINE_BEFORE_PROMPT=yes
+# STOP KALI CONFIG VARIABLES
+
+if [ "$color_prompt" = yes ]; then
+    # override default virtualenv indicator in prompt
+    VIRTUAL_ENV_DISABLE_PROMPT=1
+
+    configure_prompt
+
+    # enable syntax-highlighting
+    if [ -f /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh/ ]; then
+        . /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+        ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern)
+        ZSH_HIGHLIGHT_STYLES[default]=none
+        ZSH_HIGHLIGHT_STYLES[unknown-token]=underline
+        ZSH_HIGHLIGHT_STYLES[reserved-word]=fg=cyan,bold
+        ZSH_HIGHLIGHT_STYLES[suffix-alias]=fg=green,underline
+        ZSH_HIGHLIGHT_STYLES[global-alias]=fg=green,bold
+        ZSH_HIGHLIGHT_STYLES[precommand]=fg=green,underline
+        ZSH_HIGHLIGHT_STYLES[commandseparator]=fg=blue,bold
+        ZSH_HIGHLIGHT_STYLES[autodirectory]=fg=green,underline
+        ZSH_HIGHLIGHT_STYLES[path]=bold
+        ZSH_HIGHLIGHT_STYLES[path_pathseparator]=
+        ZSH_HIGHLIGHT_STYLES[path_prefix_pathseparator]=
+        ZSH_HIGHLIGHT_STYLES[globbing]=fg=blue,bold
+        ZSH_HIGHLIGHT_STYLES[history-expansion]=fg=blue,bold
+        ZSH_HIGHLIGHT_STYLES[command-substitution]=none
+        ZSH_HIGHLIGHT_STYLES[command-substitution-delimiter]=fg=magenta,bold
+        ZSH_HIGHLIGHT_STYLES[process-substitution]=none
+        ZSH_HIGHLIGHT_STYLES[process-substitution-delimiter]=fg=magenta,bold
+        ZSH_HIGHLIGHT_STYLES[single-hyphen-option]=fg=green
+        ZSH_HIGHLIGHT_STYLES[double-hyphen-option]=fg=green
+        ZSH_HIGHLIGHT_STYLES[back-quoted-argument]=none
+        ZSH_HIGHLIGHT_STYLES[back-quoted-argument-delimiter]=fg=blue,bold
+        ZSH_HIGHLIGHT_STYLES[single-quoted-argument]=fg=yellow
+        ZSH_HIGHLIGHT_STYLES[double-quoted-argument]=fg=yellow
+        ZSH_HIGHLIGHT_STYLES[dollar-quoted-argument]=fg=yellow
+        ZSH_HIGHLIGHT_STYLES[rc-quote]=fg=magenta
+        ZSH_HIGHLIGHT_STYLES[dollar-double-quoted-argument]=fg=magenta,bold
+        ZSH_HIGHLIGHT_STYLES[back-double-quoted-argument]=fg=magenta,bold
+        ZSH_HIGHLIGHT_STYLES[back-dollar-quoted-argument]=fg=magenta,bold
+        ZSH_HIGHLIGHT_STYLES[assign]=none
+        ZSH_HIGHLIGHT_STYLES[redirection]=fg=blue,bold
+        ZSH_HIGHLIGHT_STYLES[comment]=fg=black,bold
+        ZSH_HIGHLIGHT_STYLES[named-fd]=none
+        ZSH_HIGHLIGHT_STYLES[numeric-fd]=none
+        ZSH_HIGHLIGHT_STYLES[arg0]=fg=cyan
+        ZSH_HIGHLIGHT_STYLES[bracket-error]=fg=red,bold
+        ZSH_HIGHLIGHT_STYLES[bracket-level-1]=fg=blue,bold
+        ZSH_HIGHLIGHT_STYLES[bracket-level-2]=fg=green,bold
+        ZSH_HIGHLIGHT_STYLES[bracket-level-3]=fg=magenta,bold
+        ZSH_HIGHLIGHT_STYLES[bracket-level-4]=fg=yellow,bold
+        ZSH_HIGHLIGHT_STYLES[bracket-level-5]=fg=cyan,bold
+        ZSH_HIGHLIGHT_STYLES[cursor-matchingbracket]=standout
+    fi
+else
+    PROMPT='${debian_chroot:+($debian_chroot)}%n@%m:%~%(#.#.$) '
+fi
+unset color_prompt force_color_prompt
+
+toggle_oneline_prompt(){
+    if [ "$PROMPT_ALTERNATIVE" = oneline ]; then
+        PROMPT_ALTERNATIVE=twoline
+    else
+        PROMPT_ALTERNATIVE=oneline
+    fi
+    configure_prompt
+    zle reset-prompt
+}
+zle -N toggle_oneline_prompt
+bindkey ^P toggle_oneline_prompt
+
+# If this is an xterm set the title to user@host:dir
+case "$TERM" in
+xterm*|rxvt*|Eterm|aterm|kterm|gnome*|alacritty)
+    TERM_TITLE=$'\e]0;${debian_chroot:+($debian_chroot)}${VIRTUAL_ENV:+($(basename $VIRTUAL_ENV))}%n@%m: %~\a'
+    ;;
+*)
+    ;;
+esac
+
+# ─── Engagement scaffolding ───────────────────────────────────────────────────
+# Usage:
+#   new_engagement standalone <name>
+#   new_engagement ad <name> <host1> <host2> [host3 ...]
+#
+# Creates $ENGAGEMENTS_DIR/<name>/ with pseudo PenTest/CTF directories.
+# Override base path with $ENGAGEMENTS_DIR (defaults to ~/Engagements).
+#
+new_engagement() {
+    local type="$1"
+    local name="$2"
+    shift 2 2>/dev/null
+    local hosts=("$@")
+
+    if [[ -z "$type" || -z "$name" ]]; then
+        cat <<EOF >&2
+Usage:
+  new_engagement standalone <name>
+  new_engagement ad <name> <host1> <host2> [host3 ...]
+EOF
+        return 1
+    fi
+
+    local dir="${ENGAGEMENTS_DIR:-$HOME/Engagements}/$name"
+
+    if [[ -d "$dir" ]]; then
+        echo "Engagement '$name' already exists at $dir"
+        return 0
+    fi
+
+    local today
+    today="$(date +%Y-%m-%d)"
+
+    # ── Shared skeleton ──────────────────────────────────────────────────────
+    mkdir -p "$dir"/{00_admin,02_access/screenshots,03_privesc/screenshots,04_loot,05_proof/screenshots}
+    touch "$dir/04_loot/creds.txt" \
+          "$dir/04_loot/hashes.txt"
+
+    case "$type" in
+        standalone|sa)
+            mkdir -p "$dir/01_recon/screenshots"
+
+            cat > "$dir/00_admin/notes.md" <<EOF
+# $name — Engagement Notes
+
+**Target:**
+**Date:** $today
+**Engagement Type:** Standalone
+
+---
+
+## Recon & Enumeration
+**Screenshots:** \`01_recon/screenshots/\`
+
+### Services Discovered
+<!-- nmap output, port/service summary -->
+
+### Enumeration Highlights
+<!-- web enum, SMB shares, anonymous logins, version info -->
+
+### Vulnerabilities Identified
+<!-- CVEs, misconfigurations, exposed creds -->
+
+---
+
+## Initial Access
+**Screenshots:** \`02_access/screenshots/\`
+
+### Vulnerability Exploited
+
+### Exploitation Steps
+1.
+2.
+3.
+
+### Foothold Obtained
+**User:**
+**Shell type:**
+
+---
+
+## Privilege Escalation
+**Screenshots:** \`03_privesc/screenshots/\`
+
+### Enumeration Performed
+<!-- linpeas/winpeas, manual checks -->
+
+### Escalation Vector
+
+### Steps to Root
+1.
+2.
+3.
+
+---
+
+## Loot
+See \`04_loot/creds.md\` and \`04_loot/hashes.md\`
+
+### Notable Findings
+
+---
+
+## Proof
+**Screenshots:** \`05_proof/screenshots/\`
+
+- [ ] \`local.txt\` captured
+- [ ] \`proof.txt\` captured
+- [ ] \`whoami\` screenshot (user)
+- [ ] \`whoami\` screenshot (root/system)
+- [ ] \`ip a\` screenshot
+EOF
+            ;;
+
+        ad)
+            if [[ ${#hosts[@]} -lt 1 ]]; then
+                echo "Error: AD engagement requires at least one host." >&2
+                rm -rf "$dir"
+                return 1
+            fi
+
+            mkdir -p "$dir/06_domain/screenshots"
+            touch "$dir/06_domain/bloodhound.md"
+            for h in "${hosts[@]}"; do
+                mkdir -p "$dir/01_recon/$h/screenshots"
+            done
+            printf '%s\n' "${hosts[@]}" > "$dir/00_admin/hosts.md"
+
+            # Build per-host findings sections dynamically
+            local host_sections=""
+            for h in "${hosts[@]}"; do
+                host_sections+=$'\n#### '"$h"$'\n<!-- services, vulns, key info -->\n'
+            done
+
+            cat > "$dir/00_admin/notes.md" <<EOF
+# $name — Engagement Notes
+
+**Engagement Type:** Active Directory
+**Hosts:** see \`00_admin/hosts.md\`
+**Date:** $today
+
+---
+
+## Recon & Enumeration
+**Per-host screenshots:** \`01_recon/<host>/screenshots/\`
+
+### Host Discovery
+<!-- live hosts, OS, primary services -->
+
+### Per-Host Findings
+$host_sections
+---
+
+## Initial Access
+**Screenshots:** \`02_access/screenshots/\`
+
+### Entry Point
+**Host:**
+**Vulnerability:**
+
+### Exploitation Steps
+1.
+2.
+
+### Foothold
+**User:**
+**Host:**
+
+---
+
+## Domain Enumeration
+**Screenshots:** \`06_domain/screenshots/\`
+**BloodHound notes:** \`06_domain/bloodhound.md\`
+
+### Users / Groups / Computers
+
+### Trust Relationships
+
+### Attack Paths Identified
+
+---
+
+## Privilege Escalation
+**Screenshots:** \`03_privesc/screenshots/\`
+
+### Local Privesc (per host)
+
+### Domain Privesc
+<!-- kerberoast, AS-REP roast, DCSync, etc. -->
+
+---
+
+## Lateral Movement
+
+### Pivots
+<!-- host -> host -> host -->
+
+### Techniques Used
+<!-- pass-the-hash, RDP, WinRM, etc. -->
+
+---
+
+## Loot
+See \`04_loot/creds.md\` and \`04_loot/hashes.md\`
+
+### Domain Admin Obtained
+**Account:**
+**Method:**
+
+---
+
+## Proof
+**Screenshots:** \`05_proof/screenshots/\`
+
+- [ ] DA proof screenshot
+- [ ] \`proof.txt\` from each host
+- [ ] BloodHound graph screenshot
+EOF
+            ;;
+
+        *)
+            echo "Unknown type: '$type'. Use 'standalone' or 'ad'." >&2
+            rm -rf "$dir"
+            return 1
+            ;;
+    esac
+
+    echo "Engagement created: $dir"
+    tree -L 4 "$dir" 2>/dev/null || ls -R "$dir"
+}
+
+
+# ─── Network prompt builder ───────────────────────────────────────────────
+# Color philosophy:
+#   Blue  space  (81): [IF  - iface:ip]  — interfaces we own
+#   Grey  space (245): [VPN - iface:ip]  — accessed, not owned (tun*)
+#                (245): [LIG - iface:ip] — accessed, not owned (lig*)
+#   Placeholder (240): [VPN - ] [LIG - ] — inactive, dimmed
+#   Red   space (196): >>>[TGT=ip]        — targets we hunt (hidden if unset)
+#   Structure   (160): brackets, separators
+precmd() {
+    local if_prompt=""
+    local vpn_prompt=""
+    local lig_prompt=""
+
+    # ── IF and VPN: require global IPv4 and UP/UNKNOWN state ─────────────────
+    while read -r iface ip; do
+        if ip link show "$iface" 2>/dev/null | grep -qE "state (UP|UNKNOWN)"; then
+            if [[ "$iface" == tun* ]]; then
+                vpn_prompt+="%F{160}[%F{245}VPN - ${iface}:${ip}%F{160}]-"
+            else
+                if_prompt+="%F{160}[%F{81}IF - ${iface}:${ip}%F{160}]-"
+            fi
+        fi
+    done < <(ip -4 addr show scope global | awk '/inet / {split($2,a,"/"); print $NF, a[1]}')
+
+    # ── LIG: checked separately — ligolo interfaces may have no global IPv4 ──
+    # Matches any interface starting with "lig" (ligolo, lig0, etc.)
+    # Shows iface:ip if IPv4 exists, just iface name if IPv6/no IP only
+    while read -r iface; do
+        if ip link show "$iface" 2>/dev/null | grep -qE "state (UP|UNKNOWN)"; then
+            local lig_ip
+            lig_ip=$(ip -4 addr show "$iface" 2>/dev/null | awk '/inet / {split($2,a,"/"); print a[1]}')
+            if [[ -n "$lig_ip" ]]; then
+                lig_prompt+="%F{160}[%F{245}LIG - ${iface}:${lig_ip}%F{160}]-"
+            else
+                lig_prompt+="%F{160}[%F{245}LIG - ${iface}%F{160}]-"
+            fi
+        fi
+    done < <(ip link show | awk -F': ' '/^[0-9]+: lig/{print $2}' | cut -d'@' -f1)
+
+    # ── Placeholders for inactive grey space ──────────────────────────────────
+    [[ -z "$vpn_prompt" ]] && vpn_prompt="%F{160}[%F{240}VPN - %F{160}]-"
+    [[ -z "$lig_prompt" ]] && lig_prompt="%F{160}[%F{240}LIG - %F{160}]-"
+
+    # ── Assemble: IF → VPN → LIG → TGT ──────────────────────────────────────
+    NETWORK_PROMPT="${if_prompt}${vpn_prompt}${lig_prompt}"
+
+    # TGT hidden entirely when not set
+    if [[ -n "$TGT" ]]; then
+        NETWORK_PROMPT+="%F{160}>>>%F{196}[TGT=${TGT}]%F{160}-"
+    fi
+
+    # Trim trailing dash
+    NETWORK_PROMPT="${NETWORK_PROMPT%-}"
+
+    # ─── Terminal title ───────────────────────────────────────────────────────
+    print -Pnr -- "$TERM_TITLE"
+
+    # ─── Newline before prompt ────────────────────────────────────────────────
+    if [ "$NEWLINE_BEFORE_PROMPT" = yes ]; then
+        if [ -z "$_NEW_LINE_BEFORE_PROMPT" ]; then
+            _NEW_LINE_BEFORE_PROMPT=1
+        else
+            print ""
+        fi
+    fi
+}
+
+# ─── Target helper functions ──────────────────────────────────────────────────
+# Usage: tgt 10.10.11.5   — validate IPv4, set target, scaffold engagement
+#        untgt            — clear target
+tgt() {
+    local ip="$1"
+
+    if [[ -z "$ip" ]]; then
+        echo "Usage: tgt <ipv4-address>" >&2
+        return 1
+    fi
+
+    # Shape check (4 dotted octets)
+    if [[ ! "$ip" =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+        echo "Error: '$ip' is not a valid IPv4 address (format)." >&2
+        return 1
+    fi
+
+    # Octet range check (0–255)
+    local -a octets
+    octets=("${(@s/./)ip}")
+    for o in "${octets[@]}"; do
+        if (( o > 255 )); then
+            echo "Error: '$ip' has invalid octet ($o > 255)." >&2
+            return 1
+        fi
+    done
+
+    export TGT="$ip"
+    echo "Target set: $TGT"
+
+    # Scaffold standalone engagement (silently no-ops if it already exists)
+    new_engagement standalone "$TGT"
+}
+
+untgt() {
+    unset TGT
+    echo "Target cleared."
+}
+
+# ─── Listener helper ────────────────────────────────────────────────────────────
+# Usage:
+#   listener up [interface|ip] [port]   Set listener vars (default: tun0, 1337)
+#   listener down                       Unset listener vars
+#   listener status                     Show current configuration
+#   listener start                      Launch the listener with current vars
+#   listener help                       Show this help
+#
+listener() {
+    local cmd="${1:-status}"
+
+    case "$cmd" in
+        up)
+            local target="${2:-tun0}"
+            local port="${3:-1337}"
+            local ip
+
+            # If target looks like an IPv4 address, use it directly;
+            # otherwise treat it as an interface name and resolve.
+            if [[ "$target" =~ ^[0-9]{1,3}(\.[0-9]{1,3}){3}$ ]]; then
+                ip="$target"
+            else
+                ip="$(ip -4 -o addr show "$target" 2>/dev/null | awk '{print $4}' | cut -d/ -f1)"
+                if [[ -z "$ip" ]]; then
+                    echo "Error: could not get IPv4 address for interface '$target'" >&2
+                    return 1
+                fi
+            fi
+
+            export KALI_IP="$ip"
+            export LPORT="$port"
+            echo "Listener configured: $KALI_IP:$LPORT"
+            echo "Start with 'listener start'"
+            ;;
+        down)
+            unset KALI_IP LPORT
+            echo "Listener configuration cleared."
+            ;;
+        status)
+            if [[ -n "$KALI_IP" && -n "$LPORT" ]]; then
+                echo "Listener: $KALI_IP:$LPORT"
+            else
+                echo "Listener not configured. Run: listener up"
+            fi
+            ;;
+        start)
+            if [[ -z "$LPORT" ]]; then
+                echo "Error: listener not configured. Run 'listener up' first." >&2
+                return 1
+            fi
+            echo "Starting listener on $KALI_IP:$LPORT ..."
+            sudo rlwrap -cAr nc -nvlp "$LPORT"
+            ;;
+        -h|--help|help)
+            cat <<EOF
+listener — quick netcat listener helper
+
+Usage:
+  listener up [interface|ip] [port]   Sets variables (default: tun0, 1337)
+  listener down                       Clears current variables
+  listener status                     Show current config
+  listener start                      Launch listener now
+  listener help                       Show this help
+
+Examples:
+  listener up                         # tun0 (default)
+  listener up tun1                    # specific interface
+  listener up eth0 4444               # interface + custom port
+  listener up 0.0.0.0                 # bind-all
+  listener up 10.10.14.5 9001         # explicit IP + port
+EOF
+            ;;
+        *)
+            echo "Unknown subcommand: '$cmd'. Try 'listener help'." >&2
+            return 1
+            ;;
+    esac
+}
+
+# ─── History wipe helper ──────────────────────────────────────────────────────
+# Usage: wipe-history       — interactively wipe shell + common tool histories
+#        wipe-history -y    — skip confirmation (for scripted use)
+#        wipe-history -n    — dry run, show what would be wiped
+#
+# Wipes:
+#   Shell:    ~/.zsh_history, ~/.bash_history (and current session memory)
+#   Editors:  ~/.viminfo
+#   Pagers:   ~/.lesshst
+#   REPLs:    ~/.python_history, ~/.node_repl_history
+#   DB:       ~/.sqlite_history, ~/.mysql_history, ~/.psql_history
+#   Debug:    ~/.gdb_history
+#   Desktop:  ~/.local/share/recently-used.xbel
+#
+wipe-history() {
+    local confirm=true
+    local dry_run=false
+
+    # Parse flags
+    case "$1" in
+        -y|--yes)    confirm=false ;;
+        -n|--dry-run) dry_run=true ;;
+        -h|--help)
+            cat <<EOF
+wipe-history — clear shell and common tool history files
+
+Usage:
+  wipe-history          Prompt before wiping
+  wipe-history -y       Skip confirmation
+  wipe-history -n       Dry run (show targets, wipe nothing)
+  wipe-history -h       Show this help
+EOF
+            return 0
+            ;;
+    esac
+
+    # Files to wipe — edit this list to add/remove targets
+    local -a targets=(
+        "$HOME/.zsh_history"
+        "$HOME/.bash_history"
+        "$HOME/.python_history"
+        "$HOME/.node_repl_history"
+        "$HOME/.viminfo"
+        "$HOME/.lesshst"
+        "$HOME/.sqlite_history"
+        "$HOME/.mysql_history"
+        "$HOME/.psql_history"
+        "$HOME/.gdb_history"
+        "$HOME/.local/share/recently-used.xbel"
+        "$HOME/.mariadb_history"
+        "$HOME/.evil-winrm/history/*.hist"
+        "$HOME/.nxc/logs/dpapi/*"
+        "$HOME/.nxc/logs/lsa/*"
+        "$HOME/.nxc/logs/ntds/*"
+        "$HOME/.nxc/logs/sam/*"
+        "$HOME/.nxc/screenshots/*"
+        "$HOME/.nxc/modules/lsassy/*"
+        "$HOME/.nxc/modules/nxc_spider_plus/*"
+        "$HOME/.john/john.pot"
+        "$HOME/.nc_history"
+    )
+
+    # Build list of files that actually exist
+    local -a existing=()
+    for f in "${targets[@]}"; do
+        [[ -f "$f" ]] && existing+=("$f")
+    done
+
+    # Show what we found
+    if [[ ${#existing[@]} -eq 0 ]]; then
+        echo "No history files found. Nothing to wipe."
+        return 0
+    fi
+
+    echo "Found ${#existing[@]} history file(s):"
+    for f in "${existing[@]}"; do
+        local size
+        size=$(du -h "$f" 2>/dev/null | cut -f1)
+        echo "  $f  ($size)"
+    done
+
+    # Dry run — stop here
+    if $dry_run; then
+        echo ""
+        echo "Dry run: no files modified."
+        return 0
+    fi
+
+    # Confirmation prompt
+    if $confirm; then
+        echo ""
+        echo -n "Wipe these files and clear current session history? [y/N] "
+        read -r response
+        if [[ ! "$response" =~ ^[Yy]$ ]]; then
+            echo "Aborted."
+            return 1
+        fi
+    fi
+
+    # Truncate (not delete) so files remain but are empty
+    # — preserves any tool's expectation that the file exists
+    # — kills zsh-autosuggestions' source data
+    for f in "${existing[@]}"; do
+        : > "$f"
+    done
+
+    # Clear current zsh session history (in-memory)
+    # -p clears the history list for this session
+    history -p
+
+    echo "Wiped ${#existing[@]} file(s) and current session history."
+}
+
+
+
+# enable color support of ls, less and man, and also add handy aliases
+if [ -x /usr/bin/dircolors ]; then
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    export LS_COLORS="$LS_COLORS:ow=30;44:" # fix ls color for folders with 777 permissions
+
+    alias ls='ls --color=auto'
+    #alias dir='dir --color=auto'
+    #alias vdir='vdir --color=auto'
+
+    alias grep='grep --color=auto'
+    alias fgrep='fgrep --color=auto'
+    alias egrep='egrep --color=auto'
+    alias diff='diff --color=auto'
+    alias ip='ip --color=auto'
+
+    export LESS_TERMCAP_mb=$'\E[1;31m'     # begin blink
+    export LESS_TERMCAP_md=$'\E[1;36m'     # begin bold
+    export LESS_TERMCAP_me=$'\E[0m'        # reset bold/blink
+    export LESS_TERMCAP_so=$'\E[01;33m'    # begin reverse video
+    export LESS_TERMCAP_se=$'\E[0m'        # reset reverse video
+    export LESS_TERMCAP_us=$'\E[1;32m'     # begin underline
+    export LESS_TERMCAP_ue=$'\E[0m'        # reset underline
+
+    # Take advantage of $LS_COLORS for completion as well
+    zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+    zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;31'
+fi
+
+# some more ls aliases
+alias ll='ls -larth'
+alias la='ls -A'
+alias l='ls -CF'
+
+# enable auto-suggestions based on the history
+if [ -f /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]; then
+    . /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+    # change suggestion color
+    ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=244'
+fi
+
+# enable command-not-found if installed
+if [ -f /etc/zsh_command_not_found ]; then
+    . /etc/zsh_command_not_found
+fi
+
+# Created by `pipx` on 2026-02-24 00:27:44
+export PATH="$PATH:/home/kali/.local/bin"
+export PATH=$HOME/.local/bin:$PATH
+
+# ─── Engagement directory location ────────────────────────────────────────────
+# Override default ~/Engagements path here if needed.
+export ENGAGEMENTS_DIR="$HOME/Engagements"
