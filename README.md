@@ -160,13 +160,11 @@ the end of the engagement.
 ### Target helpers
 
 ```bash
-tgt 10.10.11.5     # validate IPv4, set $TGT, scaffold standalone engagement
+tgt 10.10.11.5     # validate IPv4, set $TGT and zsh [TGT=] prompt.
 untgt              # clear $TGT
 ```
 
-`tgt` validates the IP shape and octet ranges before exporting, and triggers
-`new_engagement standalone` automatically — so your prompt updates and your
-working directory is ready in one command.
+`tgt` validates the IP shape and octet ranges before exporting to zsh prompt.
 
 ### Listener helper
 
