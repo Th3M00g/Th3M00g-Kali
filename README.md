@@ -20,7 +20,9 @@ Th3M00g-Kali/
 
 ## Quick install
 
-On a fresh Kali box:
+![Installation Demo:](./%20docs/installation.gif)
+
+On a fresh Kali machine:
 
 ```bash
 git clone https://github.com/Th3M00g/Th3M00g-Kali.git ~/Th3M00g-Kali
@@ -116,6 +118,8 @@ the next prompt reflects it. Manually triggering a redraw is sometimes required.
 
 ### Engagement scaffolding
 
+![Engagment Scaffold Demo:](./%20docs/engagement_scaffold_setup.gif)
+
 Two engagement types (Standalone and Active Directory), organized in phase directories:
 
 ```bash
@@ -163,8 +167,10 @@ untgt              # clear $TGT
 
 ### Listener helper
 
+![Listener Demo](./%20docs/listener_setup.gif)
+
 ```bash
-listener up [interface||ip] [port]    # set $KALI_IP / $LPORT (default: tun0:1337)
+listener up [interface||ip] [port]   # set $KALI_IP / $LPORT (default: tun0:1337)
 listener down                        # clear vars
 listener status                      # show current config
 listener start                       # launch sudo rlwrap -cAr nc -nvlp $LPORT
@@ -175,6 +181,8 @@ Auto-detects IPv4 from interface name, or takes a literal IP for
 `0.0.0.0`-style binds.
 
 ### History wipe
+
+![wipe-history Demo:](./%20docs/wipe_reset.gif)
 
 End-of-engagement cleanup for shell and common tool histories:
 
