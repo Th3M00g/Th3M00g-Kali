@@ -290,7 +290,7 @@ EOF
 ---
 
 ## Loot
-See \`04_loot/creds.md\` and \`04_loot/hashes.md\`
+See \`04_loot/credentials.txt\` and \`04_loot/hashes.txt\`
 
 ### Notable Findings
 
@@ -319,7 +319,7 @@ EOF
             for h in "${hosts[@]}"; do
                 mkdir -p "$dir/01_recon/$h/screenshots"
             done
-            printf '%s\n' "${hosts[@]}" > "$dir/00_admin/hosts.md"
+            printf '%s\n' "${hosts[@]}" > "$dir/00_admin/hosts.txt"
 
             # Build per-host findings sections dynamically
             local host_sections=""
@@ -331,7 +331,7 @@ EOF
 # $name — Engagement Notes
 
 **Engagement Type:** Active Directory
-**Hosts:** see \`00_admin/hosts.md\`
+**Hosts:** see \`00_admin/hosts.txt\`
 **Date:** $today
 
 ---
@@ -396,7 +396,7 @@ $host_sections
 ---
 
 ## Loot
-See \`04_loot/creds.md\` and \`04_loot/hashes.md\`
+See \`04_loot/credentials.txt\` and \`04_loot/hashes.txt\`
 
 ### Domain Admin Obtained
 **Account:**
