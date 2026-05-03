@@ -493,7 +493,7 @@ precmd() {
 }
 
 # ─── Target helper functions ──────────────────────────────────────────────────
-# Usage: tgt 10.10.11.5   — validate IPv4, set target, scaffold engagement
+# Usage: tgt 10.10.11.5   — validate IPv4, set target
 #        untgt            — clear target
 tgt() {
     local ip="$1"
