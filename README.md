@@ -25,6 +25,7 @@ On a fresh Kali box:
 ```bash
 git clone https://github.com/Th3M00g/Th3M00g-Kali.git ~/Th3M00g-Kali
 cd ~/Th3M00g-Kali
+chmod +x ./install.sh
 ./install.sh
 ```
 
@@ -38,8 +39,8 @@ To preview what `install.sh` will do without making changes:
 
 ## What `install.sh` does for you automatically
 
-- **Symlinks Th3M00g-Kali** from `src/` into `$HOME` (`~/.zshrc`, `~/.vimrc`, `~/.inputrc`)
-- **Backs up** any existing Th3M00g-Kali to `~/.dotfiles-backup-<timestamp>/` before overwriting
+- **Symlinks dotfiles** from `src/` into `$HOME` (`~/.zshrc`, `~/.vimrc`, `~/.inputrc`)
+- **Backs up** any existing dotfiles to `~/.dotfiles-backup-<timestamp>/` before overwriting
 - **Creates required directories** (`~/.vim/undo` for persistent undo, `~/.config`)
 - **Sets git basics**: `user.name`, `user.email`, `init.defaultBranch=main`,
   `push.autoSetupRemote=true`
@@ -61,10 +62,6 @@ Open `install.sh` and change these two lines to your actual values:
 GIT_NAME="your-name"
 GIT_EMAIL="your-email@example.com"
 ```
-
-For public repos, consider using a GitHub no-reply address
-(`<id>+<username>@users.noreply.github.com`) to keep your real email out of
-commit history.
 
 ### 2. Set up `~/.zshrc.local` for private values
 
@@ -97,8 +94,6 @@ what's currently installed on your machine:
 pipx list --short | awk '{print $1}' >> ~/Th3M00g-Kali/src/pipx-tools.txt
 ```
 
-Commit and push when you add new tools so a fresh install replays them.
-
 ## Features
 
 ### Custom zsh prompt
@@ -117,7 +112,7 @@ I designed this zsh prompt to give me at-a-glance situational awareness of netwo
 - **`>>>[TGT=ip]`** — current target (hidden when unset).
 
 Network state refreshes on every prompt redraw — connect/disconnect a VPN and
-the next prompt reflects it. Manually triggering a redraw is sometimes required. 
+the next prompt reflects it. Manually triggering a redraw is sometimes required.
 
 ### Engagement scaffolding
 
@@ -230,8 +225,7 @@ exec zsh            # reload shell to pick up zshrc changes
 
 - **Kali-tested only.** Should work on Debian/Ubuntu derivatives but I havent 
 validated it there.
-- **zsh required.** Bash users would need a separate `.bashrc` port — 
-not included.
+- **zsh required.** Bash users would need a separate `.bashrc`.
 - **Some helpers assume `tun0` for VPN.** If your VPN uses a different 
 interface name pattern, edit the prompt-building loops in `src/zshrc`.
 

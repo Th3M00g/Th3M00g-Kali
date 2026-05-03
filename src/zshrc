@@ -200,7 +200,6 @@ esac
 #
 # Creates $ENGAGEMENTS_DIR/<name>/ with pseudo PenTest/CTF directories.
 # Override base path with $ENGAGEMENTS_DIR (defaults to ~/Engagements).
-#
 new_engagement() {
     local type="$1"
     local name="$2"
@@ -493,8 +492,8 @@ precmd() {
 }
 
 # ─── Target helper functions ──────────────────────────────────────────────────
-# Usage: tgt 10.10.11.5   — validate IPv4, set target
-#        untgt            — clear target
+# Usage: tgt 10.10.11.5    validate IPv4, set target
+#        untgt             clear target
 tgt() {
     local ip="$1"
 
@@ -521,9 +520,6 @@ tgt() {
 
     export TGT="$ip"
     echo "Target set: $TGT"
-
-    # Scaffold standalone engagement (silently no-ops if it already exists)
-    # new_engagement standalone "$TGT"
 }
 
 untgt() {
@@ -539,6 +535,8 @@ untgt() {
 #   listener start                      Launch the listener with current vars
 #   listener help                       Show this help
 #
+#Depenencies:
+#   rlwrap
 listener() {
     local cmd="${1:-status}"
 
@@ -660,16 +658,6 @@ EOF
         "$HOME/.gdb_history"
         "$HOME/.local/share/recently-used.xbel"
         "$HOME/.mariadb_history"
-        "$HOME/.evil-winrm/history/*.hist"
-        "$HOME/.nxc/logs/dpapi/*"
-        "$HOME/.nxc/logs/lsa/*"
-        "$HOME/.nxc/logs/ntds/*"
-        "$HOME/.nxc/logs/sam/*"
-        "$HOME/.nxc/screenshots/*"
-        "$HOME/.nxc/modules/lsassy/*"
-        "$HOME/.nxc/modules/nxc_spider_plus/*"
-        "$HOME/.john/john.pot"
-        "$HOME/.nc_history"
     )
 
     # Build list of files that actually exist
