@@ -226,7 +226,7 @@ EOF
     today="$(date +%Y-%m-%d)"
 
     # ── Shared skeleton ──────────────────────────────────────────────────────
-    mkdir -p "$dir"/{00_admin,02_access/screenshots,03_privesc/screenshots,04_loot,05_proof/screenshots}
+    mkdir -p "$dir"/{00_admin/uploads,00_admin/downloads,02_access/screenshots,03_privesc/screenshots,04_loot,05_proof/screenshots}
     touch "$dir/04_loot/creds.txt" \
           "$dir/04_loot/hashes.txt"
 
