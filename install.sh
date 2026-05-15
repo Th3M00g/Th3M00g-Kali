@@ -128,6 +128,25 @@ run git config --global user.email "$GIT_EMAIL"
 run git config --global init.defaultBranch main
 run git config --global push.autoSetupRemote true
 
+# ─── apt packages ──────────────────────────────────────────────────────────
+if [[ -f "$SRC/apt-packages.txt" ]]; then
+    if command -v apt-get &>/dev/null; then
+        info "Installing apt packages from src/apt-packages.txt..."
+        pkgs=()
+        while read -r pkg; do
+            [[ -z "$pkg" || "$pkg" =~ ^[[:space:]]*# ]] && continue
+            pkgs+=("$pkg")
+        done < "$SRC/apt-packages.txt"
+        if [[ ${#pkgs[@]} -gt 0 ]]; then
+            log "apt-get install -y ${pkgs[*]}"
+            run sudo apt-get install -y "${pkgs[@]}" || warn "one or more apt packages failed to install"
+        fi
+    else
+        warn "apt-get not found; skipping system package install"
+        warn "install these manually: $(grep -vE '^[[:space:]]*(#|$)' "$SRC/apt-packages.txt" | tr '\n' ' ')"
+    fi
+fi
+
 # ─── pipx tools (optional) ─────────────────────────────────────────────────
 if [[ -f "$SRC/pipx-tools.txt" ]]; then
     if command -v pipx &>/dev/null; then

@@ -579,6 +579,10 @@ listener() {
                 echo "Error: listener not configured. Run 'listener up' first." >&2
                 return 1
             fi
+            if ! command -v rlwrap >/dev/null 2>&1; then
+                echo "Error: rlwrap not installed. Run: sudo apt install rlwrap" >&2
+                return 1
+            fi
             echo "Starting listener on $KALI_IP:$LPORT ..."
             sudo rlwrap -cAr nc -nvlp "$LPORT"
             ;;
