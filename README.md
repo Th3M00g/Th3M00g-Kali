@@ -8,7 +8,7 @@ config, and an installer to configure a fresh Kali install for my prefered basel
 
 ```
 Th3M00g-Kali/
-├── install.sh              symlink dotfiles into $HOME, configure git, restore pipx tools
+├── install.sh              symlink dotfiles into $HOME, configure git, install apt + pipx tools
 ├── README.md               this file
 ├── docs/
 │   ├── installation.gif                   installation demonstration
@@ -20,6 +20,7 @@ Th3M00g-Kali/
     ├── vimrc               vim config: line numbers, 80-char marker, sane defaults
     ├── inputrc             readline config (affects bash, python REPL, gdb, etc.)
     ├── zshrc.local.example template for machine-specific overrides
+    ├── apt-packages.txt    list of apt packages required by the zshrc helpers
     └── pipx-tools.txt      list of pipx tools to restore on fresh setup
 ```
 
@@ -51,6 +52,10 @@ To preview what `install.sh` will do without making changes:
 - **Creates required directories** (`~/.vim/undo` for persistent undo, `~/.config`)
 - **Sets git basics**: `user.name`, `user.email`, `init.defaultBranch=main`,
   `push.autoSetupRemote=true`
+- **Installs apt packages** listed in `src/apt-packages.txt` (e.g. `rlwrap` for
+  the listener helper, `tree` for engagement scaffolding, the zsh plugins the
+  prompt expects). Runs `sudo apt-get install -y`; skipped on non-apt systems
+  with a list of what to install manually.
 - **Restores pipx tools** listed in `src/pipx-tools.txt` (skipped if pipx isn't installed)
 
 Re-running the script is safe — it skips files that are already correctly
@@ -100,6 +105,14 @@ what's currently installed on your machine:
 ```bash
 pipx list --short | awk '{print $1}' >> ~/Th3M00g-Kali/src/pipx-tools.txt
 ```
+
+### 4. Extend `apt-packages.txt` if you add new helpers
+
+`src/apt-packages.txt` ships with the packages the committed zshrc helpers
+need (`rlwrap`, `tree`, `zsh-syntax-highlighting`, `zsh-autosuggestions`,
+`pipx`). If you add a new function to `zshrc` that shells out to another
+binary, append the package here so consumers on a fresh box don't hit a
+"command not found" mid-engagement.
 
 ## Features
 
